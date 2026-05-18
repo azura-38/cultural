@@ -1,60 +1,64 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import replicate
-import os
-from dotenv import load_dotenv
+from pydantic import BaseModel, Field
 
-# 🔥 ENV LOAD
-load_dotenv()
+from prompt_engine import CultureNotFoundError, CulturalPromptEngine
 
-token = os.getenv("REPLICATE_API_TOKEN")
-
-if not token:
-    raise ValueError("❌ REPLICATE_API_TOKEN bulunamadı (.env kontrol et)")
-
-os.environ["REPLICATE_API_TOKEN"] = token
-
-# 🔥 APP
-app = FastAPI()
+app = FastAPI(
+    title="LIMANEX Cultural AI",
+    description="A zero-budget cultural image prompt generation API.",
+    version="1.0.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-class PromptRequest(BaseModel):
-    prompt: str
-    culture: str
+engine = CulturalPromptEngine()
+
+
+class GenerateRequest(BaseModel):
+    prompt: str = Field(..., min_length=3, description="The user's base image idea.")
+    culture: str = Field(..., min_length=2, description="Culture key such as turkish.")
+    style: str = Field("cinematic", description="Visual style preset.")
+    quality: str = Field("high", description="Quality preset.")
+
 
 @app.get("/")
 def root():
-    return {"message": "API çalışıyor 🚀"}
+    return {
+        "message": "LIMANEX Cultural AI API is running",
+        "version": "1.0.0",
+    }
 
-# 🔥 TEK generate endpoint
+
+@app.get("/cultures")
+def get_cultures():
+    return {
+        "cultures": engine.list_cultures(),
+        "styles": engine.supported_styles,
+        "qualities": engine.supported_qualities,
+    }
+
+
 @app.post("/generate")
-def generate(data: PromptRequest):
+def generate(data: GenerateRequest):
     try:
-        final_prompt = f"""
-        {data.prompt} in {data.culture} culture,
-        traditional clothing, cultural symbols,
-        ultra realistic, cinematic lighting, highly detailed
-        """
-
-        output = replicate.run(
-            "stability-ai/sdxl-turbo:da77bc59ee60423279fd632efb4795ab731d9e3ca9705ef3341091fb989b7eaf",
-            input={
-                "prompt": final_prompt
-            }
+        result = engine.generate(
+            prompt=data.prompt,
+            culture_id=data.culture,
+            style=data.style,
+            quality=data.quality,
         )
-
-        return {
-            "prompt": final_prompt,
-            "image": output[0]
-        }
-
-    except Exception as e:
-        return {"error": str(e)}
+        return result
+    except CultureNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
