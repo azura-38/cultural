@@ -3,11 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from prompt_engine import CultureNotFoundError, CulturalPromptEngine
+from qwen_client import QwenEnhancer
 
 app = FastAPI(
     title="LIMANEX Cultural AI",
-    description="A zero-budget cultural image prompt generation API.",
-    version="1.0.0",
+    description="A Qwen-assisted cultural image prompt generation API.",
+    version="1.1.0",
 )
 
 app.add_middleware(
@@ -22,6 +23,7 @@ app.add_middleware(
 )
 
 engine = CulturalPromptEngine()
+qwen = QwenEnhancer()
 
 
 class GenerateRequest(BaseModel):
@@ -29,13 +31,16 @@ class GenerateRequest(BaseModel):
     culture: str = Field(..., min_length=2, description="Culture key such as turkish.")
     style: str = Field("cinematic", description="Visual style preset.")
     quality: str = Field("high", description="Quality preset.")
+    use_qwen: bool = Field(True, description="Use Qwen API if the API key is configured.")
 
 
 @app.get("/")
 def root():
     return {
         "message": "LIMANEX Cultural AI API is running",
-        "version": "1.0.0",
+        "version": "1.1.0",
+        "qwen_configured": qwen.is_configured,
+        "qwen_model": qwen.model,
     }
 
 
@@ -45,6 +50,7 @@ def get_cultures():
         "cultures": engine.list_cultures(),
         "styles": engine.supported_styles,
         "qualities": engine.supported_qualities,
+        "qwen_configured": qwen.is_configured,
     }
 
 
@@ -57,7 +63,29 @@ def generate(data: GenerateRequest):
             style=data.style,
             quality=data.quality,
         )
-        return result
+
+        if data.use_qwen:
+            try:
+                return qwen.enhance(result)
+            except Exception as exc:
+                return {
+                    **result,
+                    "metadata": {
+                        **result.get("metadata", {}),
+                        "qwen_enabled": True,
+                        "qwen_status": "error",
+                        "qwen_error": str(exc),
+                    },
+                }
+
+        return {
+            **result,
+            "metadata": {
+                **result.get("metadata", {}),
+                "qwen_enabled": False,
+                "qwen_status": "disabled_by_request",
+            },
+        }
     except CultureNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:
