@@ -1,5 +1,74 @@
 {
-  "clothing": ["ottoman armor", "kaftan"],
-  "symbols": ["tughra", "crescent"],
-  "environment": ["palace", "battlefield"]
+  "id": "turkish",
+  "name": "Turkish / Anatolian",
+  "description": "A respectful blend of Anatolian, Seljuk, and Ottoman-inspired visual heritage with geometric ornament, refined textiles, and warm ceremonial atmosphere.",
+  "clothing": [
+    "embroidered kaftan",
+    "Seljuk-inspired lamellar armor",
+    "silk sash",
+    "turquoise-accented jewelry",
+    "handwoven cloak",
+    "ornamental leather boots"
+  ],
+  "symbols": [
+    "crescent motif",
+    "tughra-inspired calligraphic ornament",
+    "eight-pointed star",
+    "evil eye glass bead",
+    "geometric tile pattern",
+    "double-headed eagle motif"
+  ],
+  "architecture": [
+    "Seljuk caravanserai archways",
+    "Ottoman courtyard",
+    "domed bathhouse interior",
+    "stone madrasa portal",
+    "blue ceramic tile walls",
+    "Anatolian fortress silhouette"
+  ],
+  "materials": [
+    "turquoise ceramic tiles",
+    "aged brass",
+    "carved walnut wood",
+    "woven kilim textiles",
+    "hammered copper",
+    "polished marble"
+  ],
+  "colors": [
+    "deep turquoise",
+    "warm gold",
+    "lapis blue",
+    "earthy terracotta",
+    "ivory stone",
+    "pomegranate red"
+  ],
+  "environment": [
+    "misty Anatolian plateau",
+    "lantern-lit palace courtyard",
+    "ancient stone bazaar",
+    "mountain pass near a caravan route",
+    "quiet fountain garden",
+    "sunset over domes"
+  ],
+  "mythology": [
+    "subtle Simurgh-like bird of light",
+    "Dede Korkut epic atmosphere",
+    "protective celestial crescent glow",
+    "ancient nomadic spirit imagery",
+    "mythic steppe wind"
+  ],
+  "art_style": [
+    "Ottoman miniature-inspired composition",
+    "Seljuk geometric ornamentation",
+    "cinematic historical fantasy",
+    "refined manuscript detail",
+    "ornamental but balanced design"
+  ],
+  "avoid": [
+    "random Middle Eastern clichés",
+    "belly dancer stereotypes",
+    "generic desert-only setting",
+    "religious text used as decoration",
+    "cartoonish fez clichés"
+  ]
 }
