@@ -1,5 +1,74 @@
 {
-  "clothing": ["kimono", "samurai armor"],
-  "symbols": ["katana", "torii gate"],
-  "environment": ["bamboo forest", "temple"]
+  "id": "japanese",
+  "name": "Japanese",
+  "description": "A careful Japanese-inspired visual language using elegant restraint, seasonal atmosphere, refined craft details, and balanced composition.",
+  "clothing": [
+    "layered kimono",
+    "samurai-inspired armor plates",
+    "haori jacket",
+    "obi sash",
+    "wooden geta sandals",
+    "subtle family crest textile"
+  ],
+  "symbols": [
+    "torii gate silhouette",
+    "cherry blossom petals",
+    "crane motif",
+    "wave pattern",
+    "bamboo leaves",
+    "rising sun glow"
+  ],
+  "architecture": [
+    "wooden shrine corridor",
+    "tatami room",
+    "castle keep roofline",
+    "paper shoji screens",
+    "stone garden path",
+    "arched red bridge"
+  ],
+  "materials": [
+    "lacquered wood",
+    "washi paper",
+    "brushed steel",
+    "bamboo",
+    "ink-wash texture",
+    "weathered stone"
+  ],
+  "colors": [
+    "vermillion red",
+    "ink black",
+    "soft sakura pink",
+    "muted indigo",
+    "warm lantern amber",
+    "misty gray"
+  ],
+  "environment": [
+    "bamboo forest",
+    "misty mountain shrine",
+    "rainy alley with lanterns",
+    "quiet zen garden",
+    "snow-covered temple roof",
+    "moonlit riverbank"
+  ],
+  "mythology": [
+    "kitsune-like fox spirit glow",
+    "celestial dragon mist",
+    "kami presence suggested by light",
+    "folded paper charm symbolism",
+    "gentle yokai atmosphere"
+  ],
+  "art_style": [
+    "ukiyo-e inspired framing",
+    "minimal negative space",
+    "anime key visual polish",
+    "ink wash softness",
+    "cinematic seasonal storytelling"
+  ],
+  "avoid": [
+    "random kanji text artifacts",
+    "geisha stereotypes",
+    "ninja clichés unless requested",
+    "tourist souvenir look",
+    "overcrowded cultural symbols"
+  ]
 }
