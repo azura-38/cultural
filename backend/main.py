@@ -7,8 +7,8 @@ from qwen_client import QwenEnhancer
 
 app = FastAPI(
     title="LIMANEX Cultural AI",
-    description="A Qwen-assisted cultural image prompt generation API.",
-    version="1.1.0",
+    description="A local-first cultural image prompt generation API with optional Qwen enhancement.",
+    version="1.1.1",
 )
 
 app.add_middleware(
@@ -31,15 +31,17 @@ class GenerateRequest(BaseModel):
     culture: str = Field(..., min_length=2, description="Culture key such as turkish.")
     style: str = Field("cinematic", description="Visual style preset.")
     quality: str = Field("high", description="Quality preset.")
-    use_qwen: bool = Field(True, description="Use Qwen API if the API key is configured.")
+    use_qwen: bool = Field(False, description="Optional: use Qwen API only when explicitly enabled.")
 
 
 @app.get("/")
 def root():
     return {
-        "message": "LIMANEX Cultural AI API is running",
-        "version": "1.1.0",
+        "message": "LIMANEX Cultural AI API is running in local-first mode",
+        "version": "1.1.1",
+        "default_engine": "local-cultural-prompt-engine",
         "qwen_configured": qwen.is_configured,
+        "qwen_default_enabled": False,
         "qwen_model": qwen.model,
     }
 
@@ -50,7 +52,9 @@ def get_cultures():
         "cultures": engine.list_cultures(),
         "styles": engine.supported_styles,
         "qualities": engine.supported_qualities,
+        "default_engine": "local-cultural-prompt-engine",
         "qwen_configured": qwen.is_configured,
+        "qwen_default_enabled": False,
     }
 
 
@@ -64,28 +68,28 @@ def generate(data: GenerateRequest):
             quality=data.quality,
         )
 
-        if data.use_qwen:
-            try:
-                return qwen.enhance(result)
-            except Exception as exc:
-                return {
-                    **result,
-                    "metadata": {
-                        **result.get("metadata", {}),
-                        "qwen_enabled": True,
-                        "qwen_status": "error",
-                        "qwen_error": str(exc),
-                    },
-                }
+        if not data.use_qwen:
+            return {
+                **result,
+                "metadata": {
+                    **result.get("metadata", {}),
+                    "qwen_enabled": False,
+                    "qwen_status": "local_only",
+                },
+            }
 
-        return {
-            **result,
-            "metadata": {
-                **result.get("metadata", {}),
-                "qwen_enabled": False,
-                "qwen_status": "disabled_by_request",
-            },
-        }
+        try:
+            return qwen.enhance(result)
+        except Exception as exc:
+            return {
+                **result,
+                "metadata": {
+                    **result.get("metadata", {}),
+                    "qwen_enabled": True,
+                    "qwen_status": "error_fallback_to_local",
+                    "qwen_error": str(exc),
+                },
+            }
     except CultureNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:
